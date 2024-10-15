@@ -10,16 +10,18 @@ Content-Type: application/json
 
 {
     "titulo": "Água Viva",
-    "autor": "Clarice Lispector",
-    "qtdexemplares": 3,
+    "livrosAutores": [
+        {"autor": {"nome": "Clarice Lispector"}}
+    ],
+    "qtdExemplares": 3,
     "genero": "Ficção Literária"
 }
 
 ### Requisição para deleter livro especifico
-DELETE http://localhost:5274/biblioteca/livro/deletar/a04308ec-f4ba-4c56-9b8c-187f9e4e9932
+DELETE http://localhost:5274/biblioteca/livro/deletar/04791980-f696-4a39-8c30-ea295d8580a2
 
 ### Requisição para alterar livro específico
-PUT http://localhost:5274/biblioteca/livro/alterar/e892daa8-2d41-4ca4-b224-159e02c1ca73
+PUT http://localhost:5274/biblioteca/livro/alterar/04791980-f696-4a39-8c30-ea295d8580a2
 Content-Type: application/json
 
 {

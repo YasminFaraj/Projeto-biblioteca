@@ -10,10 +10,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Manter apenas esta linha
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.WriteIndented = true; 
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        // removi a linha abaixo para evitar conflitos
+        // options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -71,29 +72,68 @@ app.MapGet("/biblioteca/livro/buscar/{id}", ([FromRoute] string id, [FromService
     return Results.Ok(livro);
 });
 
-app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] Livro livro, [FromServices] AppDataContext ctx) =>
+//alterei aqui por conta do erro de HTTP/1.1 500 Internal Server Error
+app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] LivroDTO livroDto, [FromServices] AppDataContext ctx) =>
 {
-    foreach (var livroAutor in livro.LivrosAutores)
+    if (livroDto == null)
     {
-        if (livroAutor.Autor != null)
+        return Results.BadRequest("Dados do livro não podem ser nulos.");
+    }
+
+    if (string.IsNullOrEmpty(livroDto.Titulo))
+    {
+        return Results.BadRequest("O título do livro é obrigatório.");
+    }
+
+    var livro = new Livro
+    {
+        Titulo = livroDto.Titulo,
+        Genero = livroDto.Genero,
+        QtdExemplares = livroDto.QtdExemplares,
+        AnoLancamento = livroDto.AnoLancamento,
+        Editora = livroDto.Editora,
+        LivrosAutores = new List<LivroAutor>()
+    };
+
+    foreach (var livroAutorDto in livroDto.LivrosAutores)
+    {
+        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorDto.AutorId);
+        if (autorExistente != null)
         {
-            var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutor.Autor.AutorId);
-            if (autorExistente != null)
+            livro.LivrosAutores.Add(new LivroAutor { Autor = autorExistente, Livro = livro });
+        }
+        else
+        {
+            var novoAutor = new Autor
             {
-                livroAutor.Autor = autorExistente;
-            }
-            else
-            {
-                ctx.Autores.Add(livroAutor.Autor);
-            }
+                AutorId = Guid.NewGuid(),
+                Nome = livroAutorDto.Nome,
+                Sobrenome = livroAutorDto.Sobrenome,
+                Pais = livroAutorDto.Pais
+            };
+
+            ctx.Autores.Add(novoAutor);
+
+            livro.LivrosAutores.Add(new LivroAutor { Autor = novoAutor, Livro = livro });
         }
     }
 
     ctx.Livros.Add(livro);
-    ctx.SaveChanges();
 
-    return Results.Created("", livro);
+    try
+    {
+        ctx.SaveChanges();
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem("Ocorreu um erro ao cadastrar o livro. Detalhes: " + ex.Message, statusCode: 500);
+    }
+
+    return Results.Created($"/biblioteca/livro/{livro.LivroId}", livro);
 });
+
+
+
 
 app.MapDelete("/biblioteca/livro/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
     Livro? livro = ctx.Livros.Find(id);
@@ -168,12 +208,13 @@ app.MapGet("/biblioteca/livro/listar-com-autores", ([FromServices] AppDataContex
             l.Editora,
             Autores = l.LivrosAutores.Select(la => new {
                 NomeCompleto = la.Autor!.Nome + " " + la.Autor.Sobrenome
-            })
+            }).ToList()
         })
         .ToList();
 
     return Results.Ok(livrosComAutores);
 });
+
 
 app.UseAuthorization();
 app.MapControllers();

@@ -24,6 +24,7 @@ namespace Biblioteca.Models
 
         public string? Editora { get; set; }
 
+        [JsonIgnore]
         public ICollection<LivroAutor> LivrosAutores { get; set; }
     }
 }

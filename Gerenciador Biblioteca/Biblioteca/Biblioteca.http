@@ -19,11 +19,11 @@ Content-Type: application/json
     "editora": "Rocco"
 }
 
-### Requisição para deleter livro especifico
-DELETE http://localhost:5274/biblioteca/livro/deletar/d71404bd-1eb0-4aab-ad1e-d02f4a977a9d
+### Requisição para deletar livro especifico
+DELETE http://localhost:5274/biblioteca/livro/deletar/e73edc63-9e5d-4467-a09e-4bf765cd4f9c
 
 ### Requisição para alterar livro específico
-PUT http://localhost:5274/biblioteca/livro/alterar/04791980-f696-4a39-8c30-ea295d8580a2
+PUT http://localhost:5274/biblioteca/livro/alterar/e73edc63-9e5d-4467-a09e-4bf765cd4f9c
 Content-Type: application/json
 
 {
@@ -40,8 +40,8 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Clarice",
-    "sobrenome": "Lispector",
+    "nome": "Laura",
+    "sobrenome": "Yasmin",
     "pais": "Brasil"
 }
 

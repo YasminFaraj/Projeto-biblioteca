@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization; 
+
 namespace Biblioteca.Models
 {
     public class Autor
@@ -10,6 +12,7 @@ namespace Biblioteca.Models
 
         public string? Pais { get; set;}
 
+        [JsonIgnore]
         public ICollection<LivroAutor> LivrosAutores { get; set; }
 
         public Autor()

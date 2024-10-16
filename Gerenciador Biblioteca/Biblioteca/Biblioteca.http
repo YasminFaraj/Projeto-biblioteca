@@ -11,14 +11,16 @@ Content-Type: application/json
 {
     "titulo": "Água Viva",
     "livrosAutores": [
-        {"autor": {"nome": "Clarice Lispector"}}
+        {"autorId": "110a35eb-bdcb-4c2f-9c32-95143a8a4a6e"}
     ],
     "qtdExemplares": 3,
-    "genero": "Ficção Literária"
+    "anoLancamento": 1973,
+    "genero": "Ficção Literária",
+    "editora": "Rocco"
 }
 
 ### Requisição para deleter livro especifico
-DELETE http://localhost:5274/biblioteca/livro/deletar/04791980-f696-4a39-8c30-ea295d8580a2
+DELETE http://localhost:5274/biblioteca/livro/deletar/d71404bd-1eb0-4aab-ad1e-d02f4a977a9d
 
 ### Requisição para alterar livro específico
 PUT http://localhost:5274/biblioteca/livro/alterar/04791980-f696-4a39-8c30-ea295d8580a2
@@ -29,3 +31,19 @@ Content-Type: application/json
     "qtdexemplares": 1,
     "autor": "Taylor J. R."
 }
+
+### Listar autores
+GET http://localhost:5274/biblioteca/autor/listar
+
+### Cadastrar autores
+POST http://localhost:5274/biblioteca/autor/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Clarice",
+    "sobrenome": "Lispector",
+    "pais": "Brasil"
+}
+
+### Listar com autores
+GET http://localhost:5274/biblioteca/livro/listar-com-autores

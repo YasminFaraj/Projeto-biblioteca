@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj": {}
+    "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj": {}
   },
   "projects": {
-    "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj": {
+    "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
+        "projectUniqueName": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
         "projectName": "Biblioteca",
-        "projectPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
+        "projectPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
         "packagesPath": "C:\\Users\\laura\\.nuget\\packages\\",
-        "outputPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Gerenciador Biblioteca\\Biblioteca\\obj\\",
+        "outputPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\laura\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -54,6 +54,10 @@
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.10, )"
+            },
+            "Microsoft.EntityFrameworkCore.Proxies": {
               "target": "Package",
               "version": "[8.0.10, )"
             },

@@ -13,6 +13,7 @@ namespace Biblioteca.Models
         {
             optionsBuilder.UseSqlite(@"Data Source=Biblioteca.db");
         }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<LivroAutor>()

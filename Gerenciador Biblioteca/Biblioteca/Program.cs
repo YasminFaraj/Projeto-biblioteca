@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Biblioteca.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDataContext>();
@@ -7,8 +10,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.JsonSerializerOptions.WriteIndented = true; 
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+
+builder.Services.AddEndpointsApiExplorer();
+
 var app = builder.Build();
 
 List<Autor> autores = new List<Autor>{
@@ -37,7 +46,19 @@ app.MapGet("/", () => "API de Livros");
 app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Livros.Any()){
-        return Results.Ok(ctx.Livros.ToList());
+        var livrosSemAutores = ctx.Livros
+            .Select(l => new{
+                l.LivroId,
+                l.Titulo,
+                l.Genero,
+                l.QtdExemplares,
+                l.CriadoEm,
+                l.AnoLancamento,
+                l.Editora
+            })
+            .ToList();
+
+        return Results.Ok(livrosSemAutores);
     }    
     return Results.NotFound();
 });
@@ -54,17 +75,23 @@ app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] Livro livro, [FromService
 {
     foreach (var livroAutor in livro.LivrosAutores)
     {
-        if (livroAutor.Autor != null) 
+        if (livroAutor.Autor != null)
         {
-            var autorExistente = ctx.Autores.FirstOrDefault(a => a.Nome == livroAutor.Autor.Nome);
-            if (autorExistente == null)
+            var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutor.Autor.AutorId);
+            if (autorExistente != null)
+            {
+                livroAutor.Autor = autorExistente;
+            }
+            else
             {
                 ctx.Autores.Add(livroAutor.Autor);
             }
         }
     }
+
     ctx.Livros.Add(livro);
     ctx.SaveChanges();
+
     return Results.Created("", livro);
 });
 
@@ -101,19 +128,52 @@ app.MapPost("/biblioteca/autor/cadastrar", ([FromBody] Autor autor, [FromService
 
 app.MapGet("/biblioteca/autor/listar", ([FromServices] AppDataContext ctx) =>
 {
-    return Results.Ok(ctx.Autores.ToList());
+    if (ctx.Autores.Any()){
+        return Results.Ok(ctx.Autores.ToList());
+    }    
+    return Results.NotFound();
 });
 
-app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] Guid id, [FromServices] AppDataContext ctx) =>
-{
-    var autor = ctx.Autores.Find(id);
-    if (autor == null) return Results.NotFound();
+app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Autor? autor = ctx.Autores.Find(id);
+    if (autor == null){
+        return Results.NotFound();
+    } 
+    return Results.Ok(autor);
+});
 
+app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Autor? autor = ctx.Autores.Find(id);
+    if(autor == null){
+        return Results.NotFound();
+    }
     ctx.Autores.Remove(autor);
     ctx.SaveChanges();
     return Results.Ok(autor);
 });
 
+app.MapGet("/biblioteca/livro/listar-com-autores", ([FromServices] AppDataContext ctx) =>
+{
+    var livrosComAutores = ctx.Livros
+        .Include(l => l.LivrosAutores) 
+            .ThenInclude(la => la.Autor) 
+        .Select(l => new
+        {
+            l.LivroId,
+            l.Titulo,
+            l.Genero,
+            l.QtdExemplares,
+            l.CriadoEm,
+            l.AnoLancamento,
+            l.Editora,
+            Autores = l.LivrosAutores.Select(la => new {
+                NomeCompleto = la.Autor!.Nome + " " + la.Autor.Sobrenome
+            })
+        })
+        .ToList();
+
+    return Results.Ok(livrosComAutores);
+});
 
 app.UseAuthorization();
 app.MapControllers();

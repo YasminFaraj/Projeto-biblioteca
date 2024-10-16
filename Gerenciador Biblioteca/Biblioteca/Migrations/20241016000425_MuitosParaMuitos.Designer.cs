@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biblioteca.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20241015180453_MuitosParaMuitos")]
+    [Migration("20241016000425_MuitosParaMuitos")]
     partial class MuitosParaMuitos
     {
         /// <inheritdoc />

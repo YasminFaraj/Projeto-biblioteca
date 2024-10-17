@@ -11,7 +11,7 @@ Content-Type: application/json
 {
     "titulo": "Água Viva",
     "livrosAutores": [
-        {"autorId": "110a35eb-bdcb-4c2f-9c32-95143a8a4a6e"}
+        {"autorId": "a42db2f6-aaf9-4a2d-bdfc-8b4e86cf626e"}
     ],
     "qtdExemplares": 3,
     "anoLancamento": 1973,
@@ -20,17 +20,22 @@ Content-Type: application/json
 }
 
 ### Requisição para deletar livro especifico
-DELETE http://localhost:5274/biblioteca/livro/deletar/e73edc63-9e5d-4467-a09e-4bf765cd4f9c
+DELETE http://localhost:5274/biblioteca/livro/deletar/8c0096fd-7242-40a0-8093-2da8e6781002
 
 ### Requisição para alterar livro específico
-PUT http://localhost:5274/biblioteca/livro/alterar/e73edc63-9e5d-4467-a09e-4bf765cd4f9c
+PUT http://localhost:5274/biblioteca/livro/alterar/02e7e07a-8790-4e93-bb91-27ae63751ef9
 Content-Type: application/json
 
 {
-    "titulo": "Daisy Jones and The Six",
+    "titulo": "A Hora da Estrela",
     "qtdexemplares": 1,
-    "autor": "Taylor J. R."
+    "livrosAutores": [
+        {"autorId": ""}
+    ]
 }
+
+### Buscar livro específico pelo id
+GET http://localhost:5274/biblioteca/livro/buscar/5d06b6e2-3635-45ba-aa41-4db1242a40ca
 
 ### Listar autores
 GET http://localhost:5274/biblioteca/autor/listar
@@ -40,10 +45,26 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
+    "nome": "Clarice",
+    "sobrenome": "Lispector",
+    "pais": "Brasil"
+}
+
+### Deletar autor pelo id
+DELETE http://localhost:5274/biblioteca/autor/deletar/d67f7bc3-bdf3-4cb9-b25b-7cf67d36fba3
+
+### Alterar autor pelo id
+PUT http://localhost:5274/biblioteca/autor/alterar/d67f7bc3-bdf3-4cb9-b25b-7cf67d36fba3
+Content-Type: application/json
+
+{
     "nome": "Laura",
     "sobrenome": "Yasmin",
     "pais": "Brasil"
 }
 
+### Buscar autor pelo id
+GET http://localhost:5274/biblioteca/autor/buscar/d67f7bc3-bdf3-4cb9-b25b-7cf67d36fba3
+
 ### Listar com autores
-GET http://localhost:5274/biblioteca/livro/listar-com-autores
+GET http://localhost:5274/biblioteca/livro/listar_com_autores

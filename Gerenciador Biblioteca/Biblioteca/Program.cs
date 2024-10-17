@@ -44,6 +44,7 @@ List<Livro> livros = new List<Livro>{
 
 app.MapGet("/", () => "API de Livros");
 
+// Listar livro sem autor
 app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Livros.Any()){
@@ -64,6 +65,7 @@ app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
     return Results.NotFound();
 });
 
+// Buscar livro pelo id
 app.MapGet("/biblioteca/livro/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
     Livro? livro = ctx.Livros.Find(id);
     if (livro == null){
@@ -72,7 +74,7 @@ app.MapGet("/biblioteca/livro/buscar/{id}", ([FromRoute] string id, [FromService
     return Results.Ok(livro);
 });
 
-//alterei aqui por conta do erro de HTTP/1.1 500 Internal Server Error
+// Cadastrar livro
 app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] LivroDTO livroDto, [FromServices] AppDataContext ctx) =>
 {
     if (livroDto == null)
@@ -132,9 +134,7 @@ app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] LivroDTO livroDto, [FromS
     return Results.Created($"/biblioteca/livro/{livro.LivroId}", livro);
 });
 
-
-
-
+// Deletar livro pelo id
 app.MapDelete("/biblioteca/livro/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
     Livro? livro = ctx.Livros.Find(id);
     if(livro == null){
@@ -145,6 +145,7 @@ app.MapDelete("/biblioteca/livro/deletar/{id}", ([FromRoute] string id, [FromSer
     return Results.Ok(livro);
 });
 
+// Alterar livro pelo id
 app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] Livro livroAlterado, [FromServices] AppDataContext ctx) => {
     Livro? livro = ctx.Livros.Find(id);
     if(livro == null){
@@ -152,13 +153,32 @@ app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] 
     }
     livro.Titulo = livroAlterado.Titulo;
     livro.QtdExemplares = livroAlterado.QtdExemplares;
-    livro.LivrosAutores = livroAlterado.LivrosAutores;
+    livro.Genero = livroAlterado.Genero;
+    livro.AnoLancamento = livroAlterado.AnoLancamento;
+    livro.Editora = livroAlterado.Editora;
+    
+    // Remove todos os autores anteriores
+    livro.LivrosAutores.Clear();
+
+    // Adiciona os novos autores passados na requisição
+    foreach (var livroAutorAlterado in livroAlterado.LivrosAutores)
+    {
+        // Verifica se o autor já existe no banco
+        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorAlterado.AutorId);
+        if (autorExistente != null)
+        {
+            // Cria a relação entre o livro e o autor existente
+            livro.LivrosAutores.Add(new LivroAutor { LivroId = livro.LivroId, AutorId = autorExistente.AutorId });
+        }
+    }
+
     //Tive que tirar pois estava causando erros no server
     //ctx.Livros.Update(livroAlterado);
     ctx.SaveChanges();
     return Results.Ok(livro);
 });
 
+// Cadastrar autor
 app.MapPost("/biblioteca/autor/cadastrar", ([FromBody] Autor autor, [FromServices] AppDataContext ctx) =>
 {
     ctx.Autores.Add(autor);
@@ -166,6 +186,7 @@ app.MapPost("/biblioteca/autor/cadastrar", ([FromBody] Autor autor, [FromService
     return Results.Created("", autor);
 });
 
+// Listar autor
 app.MapGet("/biblioteca/autor/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Autores.Any()){
@@ -174,7 +195,8 @@ app.MapGet("/biblioteca/autor/listar", ([FromServices] AppDataContext ctx) =>
     return Results.NotFound();
 });
 
-app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+// Buscar autor pelo id
+app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] Guid id, [FromServices] AppDataContext ctx) =>{
     Autor? autor = ctx.Autores.Find(id);
     if (autor == null){
         return Results.NotFound();
@@ -182,7 +204,8 @@ app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] string id, [FromService
     return Results.Ok(autor);
 });
 
-app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+// Deletar autor pelo id
+app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] Guid id, [FromServices] AppDataContext ctx) =>{
     Autor? autor = ctx.Autores.Find(id);
     if(autor == null){
         return Results.NotFound();
@@ -192,7 +215,8 @@ app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] string id, [FromSer
     return Results.Ok(autor);
 });
 
-app.MapGet("/biblioteca/livro/listar-com-autores", ([FromServices] AppDataContext ctx) =>
+// Listar livros com autores
+app.MapGet("/biblioteca/livro/listar_com_autores", ([FromServices] AppDataContext ctx) =>
 {
     var livrosComAutores = ctx.Livros
         .Include(l => l.LivrosAutores) 
@@ -215,6 +239,19 @@ app.MapGet("/biblioteca/livro/listar-com-autores", ([FromServices] AppDataContex
     return Results.Ok(livrosComAutores);
 });
 
+// Alterar autor pelo id
+app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] Guid id, [FromBody] Autor autorAlterado, [FromServices] AppDataContext ctx) => {
+    Autor? autor = ctx.Autores.Find(id);
+    if(autor == null){
+        return Results.NotFound();
+    }
+    autor.Nome = autorAlterado.Nome;
+    autor.Sobrenome = autorAlterado.Sobrenome;
+    autor.Pais = autorAlterado.Pais;
+    autor.LivrosAutores = autorAlterado.LivrosAutores;
+    ctx.SaveChanges();
+    return Results.Ok(autor);
+});
 
 app.UseAuthorization();
 app.MapControllers();

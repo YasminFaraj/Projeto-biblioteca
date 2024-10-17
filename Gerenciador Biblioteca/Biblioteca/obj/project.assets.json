@@ -3022,19 +3022,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\yasmi\\.nuget\\packages\\": {}
+    "C:\\Users\\laura\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\yasmi\\Documents\\Gerenciador Biblioteca2\\Projeto-biblioteca-1\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
+      "projectUniqueName": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
       "projectName": "Biblioteca",
-      "projectPath": "C:\\Users\\yasmi\\Documents\\Gerenciador Biblioteca2\\Projeto-biblioteca-1\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
-      "packagesPath": "C:\\Users\\yasmi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\yasmi\\Documents\\Gerenciador Biblioteca2\\Projeto-biblioteca-1\\Gerenciador Biblioteca\\Biblioteca\\obj\\",
+      "projectPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\Biblioteca.csproj",
+      "packagesPath": "C:\\Users\\laura\\.nuget\\packages\\",
+      "outputPath": "D:\\Users\\Laura\\OneDrive\\Área de Trabalho\\Ciência da Computação\\4° Semestre\\Desenvolvimento de Software Visual\\Projeto\\Projeto-biblioteca\\Gerenciador Biblioteca\\Biblioteca\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\yasmi\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\laura\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -3115,7 +3115,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

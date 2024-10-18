@@ -146,35 +146,47 @@ app.MapDelete("/biblioteca/livro/deletar/{id}", ([FromRoute] string id, [FromSer
 });
 
 // Alterar livro pelo id
-app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] Livro livroAlterado, [FromServices] AppDataContext ctx) => {
-    Livro? livro = ctx.Livros.Find(id);
-    if(livro == null){
-        return Results.NotFound();
+app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] LivroDTO livroAlterado, [FromServices] AppDataContext ctx) =>
+{
+    // Busca o livro pelo ID
+    var livro = ctx.Livros
+        .Include(l => l.LivrosAutores)
+        .ThenInclude(la => la.Autor)
+        .FirstOrDefault(l => l.LivroId == id);
+
+    if (livro == null)
+    {
+        return Results.NotFound("Livro não encontrado.");
     }
+
     livro.Titulo = livroAlterado.Titulo;
     livro.QtdExemplares = livroAlterado.QtdExemplares;
-    livro.Genero = livroAlterado.Genero;
-    livro.AnoLancamento = livroAlterado.AnoLancamento;
     livro.Editora = livroAlterado.Editora;
-    
-    // Remove todos os autores anteriores
+    livro.AnoLancamento = livroAlterado.AnoLancamento;
+    livro.Genero = livroAlterado.Genero;
+
+    // Tira autores antigos e coloca apenas os novos
     livro.LivrosAutores.Clear();
 
-    // Adiciona os novos autores passados na requisição
-    foreach (var livroAutorAlterado in livroAlterado.LivrosAutores)
+    foreach (var livroAutorDto in livroAlterado.LivrosAutores)
     {
-        // Verifica se o autor já existe no banco
-        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorAlterado.AutorId);
+        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorDto.AutorId);
         if (autorExistente != null)
         {
-            // Cria a relação entre o livro e o autor existente
-            livro.LivrosAutores.Add(new LivroAutor { LivroId = livro.LivroId, AutorId = autorExistente.AutorId });
+            livro.LivrosAutores.Add(new LivroAutor { AutorId = autorExistente.AutorId, LivroId = livro.LivroId });
         }
     }
 
-    //Tive que tirar pois estava causando erros no server
-    //ctx.Livros.Update(livroAlterado);
-    ctx.SaveChanges();
+    // Salva ou retorna um erro
+    try
+    {
+        ctx.SaveChanges();
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem("Erro ao alterar o livro: " + ex.Message, statusCode: 500);
+    }
+
     return Results.Ok(livro);
 });
 

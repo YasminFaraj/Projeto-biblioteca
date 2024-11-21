@@ -9,25 +9,25 @@ POST http://localhost:5274/biblioteca/livro/cadastrar
 Content-Type: application/json
 
 {
-    "titulo": "Água Viva",
+    "titulo": "Teste",
     "livrosAutores": [
-        {"autorId": "a42db2f6-aaf9-4a2d-bdfc-8b4e86cf626e"}
+        {"autorId": "4b29201d-c727-445f-8fed-376a440ac579"}
     ],
     "qtdExemplares": 3,
-    "anoLancamento": 1973,
-    "genero": "Ficção Literária",
-    "editora": "Rocco"
+    "anoLancamento": 2024,
+    "genero": "Ficção",
+    "editora": "Yasmin"
 }
 
 ### Requisição para deletar livro especifico
 DELETE http://localhost:5274/biblioteca/livro/deletar/8c0096fd-7242-40a0-8093-2da8e6781002
 
 ### Requisição para alterar livro específico
-PUT http://localhost:5274/biblioteca/livro/alterar/02e7e07a-8790-4e93-bb91-27ae63751ef9
+PUT http://localhost:5274/biblioteca/livro/alterar/20a725dd-360f-4dc0-a26e-3a29b5ac73ac
 Content-Type: application/json
 
 {
-    "titulo": "A Hora da Estrela",
+    "titulo": "Teste",
     "qtdexemplares": 1,
     "livrosAutores": [
         {"autorId": "4b29201d-c727-445f-8fed-376a440ac579"}
@@ -45,16 +45,16 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Clarice",
-    "sobrenome": "Lispector",
+    "nome": "Exemplo",
+    "sobrenome": "Laura",
     "pais": "Brasil"
 }
 
 ### Deletar autor pelo id
-DELETE http://localhost:5274/biblioteca/autor/deletar/c3ac2051-06f0-4f01-afe3-b5eaebc87ae2
+DELETE http://localhost:5274/biblioteca/autor/deletar/4ea5a38e-fd33-42b4-9de4-b6585a9ee93d
 
 ### Alterar autor pelo id
-PUT http://localhost:5274/biblioteca/autor/alterar/c3ac2051-06f0-4f01-afe3-b5eaebc87ae2
+PUT http://localhost:5274/biblioteca/autor/alterar/4b29201d-c727-445f-8fed-376a440ac579
 Content-Type: application/json
 
 {
@@ -64,7 +64,7 @@ Content-Type: application/json
 }
 
 ### Buscar autor pelo id
-GET http://localhost:5274/biblioteca/autor/buscar/d67f7bc3-bdf3-4cb9-b25b-7cf67d36fba3
+GET http://localhost:5274/biblioteca/autor/buscar/4b29201d-c727-445f-8fed-376a440ac579
 
 ### Listar com autores
 GET http://localhost:5274/biblioteca/livro/listar_com_autores

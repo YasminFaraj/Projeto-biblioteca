@@ -16,6 +16,11 @@ builder.Services.AddControllers()
         // removi a linha abaixo para evitar conflitos
         // options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -61,6 +66,7 @@ app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
             .ToList();
 
         return Results.Ok(livrosSemAutores);
+        //return Results.Ok(ctx.Livros.Include(x => x.LivrosAutores.ToList()));
     }    
     return Results.NotFound();
 });
@@ -120,6 +126,11 @@ app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] LivroDTO livroDto, [FromS
         }
     }
 
+    Autor? autor = ctx.Autores.Find(livro.AutorId);
+    if(autor == null){
+        return Results.NotFound();
+    }
+    livro.Autor = autor;
     ctx.Livros.Add(livro);
 
     try
@@ -267,4 +278,5 @@ app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] Guid id, [FromBody] Au
 
 app.UseAuthorization();
 app.MapControllers();
+app.UseCors("AllowAll");
 app.Run();

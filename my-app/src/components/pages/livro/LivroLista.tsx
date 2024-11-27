@@ -43,19 +43,19 @@ function LivroLista(){
                 </thead>
                 <tbody>
                     {livros.map((livro) => (
-                        <tr key={livro.id}>
-                            <td>{livro.id}</td>
+                        <tr key={livro.livroId}>
+                            <td>{livro.livroId}</td>
                             <td>{livro.titulo}</td>
                             <td>{livro.editora}</td>
                             <td>{livro.autor?.nome}</td>
                             <td>{livro.criadoEm}</td>
                             <td>
-                                <button onClick={() => deletar(livro.id!)}>
+                                <button onClick={() => deletar(livro.livroId!)}>
                                     Deletar
-                                </button>
+                                </button> 
                             </td>
                             <td>
-                                <Link to={`/pages/livro/alterar/${livro.id}`}>
+                                <Link to={`/pages/livro/alterar/${livro.livroId}`}>
                                     Alterar
                                 </Link>
                             </td>

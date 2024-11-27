@@ -2,13 +2,13 @@ import internal from "stream"
 import { Autor } from "./Autor"
 
 export interface Livro {
-    id?: string;
+    livroId?: string;
     titulo: string;
     genero: string;
     qtdExemplares: number;
     anoLancamento: number;
     criadoEm?: string;
     editora: string
-    autorId: number;
+    autorId: string;
     autor?: Autor; 
 }

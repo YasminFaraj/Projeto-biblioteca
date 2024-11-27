@@ -11,12 +11,12 @@ Content-Type: application/json
 {
     "titulo": "Teste",
     "livrosAutores": [
-        {"autorId": "4b29201d-c727-445f-8fed-376a440ac579"}
+        {"autorId": "744d65f9-9750-4fa8-bfdc-b3cc8353020b"}
     ],
     "qtdExemplares": 3,
     "anoLancamento": 2024,
     "genero": "Ficção",
-    "editora": "Yasmin"
+    "editora": "Record"
 }
 
 ### Requisição para deletar livro especifico
@@ -45,8 +45,8 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Exemplo",
-    "sobrenome": "Laura",
+    "nome": "Teste",
+    "sobrenome": "1",
     "pais": "Brasil"
 }
 

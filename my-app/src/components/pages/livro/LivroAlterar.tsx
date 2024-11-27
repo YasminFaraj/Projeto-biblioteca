@@ -12,7 +12,7 @@ function LivroAlterar(){
     const [qtdExemplares, setQtdExemplares] = useState(0);
     const [anoLancamento, setAnoLancamento] = useState(0);
     const [editora, setEditora] = useState("");
-    const [autorId, setAutorId] = useState(0);
+    const [autorId, setAutorId] = useState("");
 
     useEffect(() => {
         if(id) {

@@ -22,9 +22,10 @@ app.MapGet("/", () => "API de Livros");
 // Listar livro com autor
 app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
 {
-    if (ctx.Livros.Any())
+    var livros = ctx.Livros.Include(x => x.Autor).ToList();
+    if (livros.Any())
     {
-        return Results.Ok(ctx.Livros.Include(x => x.Autor).ToList());
+        return Results.Ok(livros);
     }
     return Results.NotFound();
 });
@@ -44,7 +45,7 @@ app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] Livro livro, [FromService
     Autor? autor = ctx.Autores.Find(livro.AutorId);
     if (autor is null)
     {
-        return Results.NotFound();
+        return Results.NotFound("Autor não encontrado.");
     }
     livro.Autor = autor;
     ctx.Livros.Add(livro);
@@ -192,6 +193,124 @@ app.MapPut("/biblioteca/leitor/alterar/{id}", ([FromRoute] string id, [FromBody]
     ctx.SaveChanges();
     return Results.Ok(leitor);
 });
+
+// ------- EMPRESTIMOS ------
+
+// Realizar ficha do empréstimo
+app.MapPost("/biblioteca/emprestimo/ficha", ([FromBody] Emprestimo emprestimo, [FromServices] AppDataContext ctx) =>
+{
+    Livro? livro = ctx.Livros.Find(emprestimo.LivroId);
+    Leitor? leitor = ctx.Leitores.Find(emprestimo.LeitorId);
+
+    if (livro == null || leitor == null)
+        return Results.NotFound("Livro ou Leitor não encontrados.");
+
+    if (livro.QtdExemplares <= 0)
+        return Results.BadRequest("Não há exemplares disponíveis.");
+
+    // Atualiza a quantidade de exemplares do livro
+    livro.QtdExemplares--;
+
+    emprestimo.Livro = livro;
+    emprestimo.Leitor = leitor;
+
+    ctx.Emprestimos.Add(emprestimo);
+    ctx.SaveChanges();
+
+    return Results.Created("", emprestimo);
+});
+
+// Lista dos empréstimos ativos (não devolvidos)
+app.MapGet("/biblioteca/emprestimo/listar", ([FromServices] AppDataContext ctx) =>
+{
+    var emprestimos = ctx.Emprestimos
+        .Include(e => e.Livro)
+        .ThenInclude(l => l.Autor)
+        .Include(e => e.Leitor)
+        .Where(e => e.Ativo)
+        .ToList();
+
+    return emprestimos.Any() ? Results.Ok(emprestimos) : Results.NotFound();
+});
+
+// Devolução dos livros
+app.MapPut("/biblioteca/emprestimo/devolver/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>
+{
+    Emprestimo? emprestimo = ctx.Emprestimos
+        .Include(e => e.Livro)
+        .FirstOrDefault(e => e.EmprestimoId == id);
+
+    if (emprestimo == null)
+        return Results.NotFound("Empréstimo não encontrado.");
+
+    if (!emprestimo.Ativo)
+        return Results.BadRequest("O empréstimo já foi devolvido.");
+
+    // Atualiza a quantidade de exemplares
+    emprestimo.Livro.QtdExemplares++;
+
+    // Marca o empréstimo como inativo
+    emprestimo.Ativo = false;
+
+    emprestimo.DataDevolucao = DateTime.Now;
+
+    ctx.SaveChanges();
+
+    return Results.Ok(emprestimo);
+});
+
+// Alterar emprestimo pelo id
+app.MapPut("/biblioteca/emprestimo/alterar/{id}", ([FromRoute] string id, [FromBody] Emprestimo emprestimoAlterado, [FromServices] AppDataContext ctx) =>
+{
+    // Busca o empréstimo original no banco
+    Emprestimo? emprestimo = ctx.Emprestimos
+        .Include(e => e.Livro)
+        .Include(e => e.Leitor)
+        .FirstOrDefault(e => e.EmprestimoId == id);
+
+    if (emprestimo == null)
+    {
+        return Results.NotFound("Empréstimo não encontrado.");
+    }
+
+    // Busca o novo livro e leitor no banco
+    Livro? novoLivro = ctx.Livros.Find(emprestimoAlterado.LivroId);
+    Leitor? novoLeitor = ctx.Leitores.Find(emprestimoAlterado.LeitorId);
+
+    if (novoLivro == null || novoLeitor == null)
+    {
+        return Results.NotFound("Livro ou Leitor não encontrados.");
+    }
+
+    // Atualiza os relacionamentos e outras informações, se necessário
+    emprestimo.Livro = novoLivro;
+    emprestimo.Leitor = novoLeitor;
+
+    // Salva as alterações no banco
+    ctx.SaveChanges();
+
+    return Results.Ok(emprestimo);
+});
+
+// Lista das devoluções (empréstimos devolvidos)
+app.MapGet("/biblioteca/devolucao/listar", ([FromServices] AppDataContext ctx) =>
+{
+    var devolucoes = ctx.Emprestimos
+        .Include(e => e.Livro) // Inclui o livro do empréstimo
+        .ThenInclude(l => l.Autor) // Inclui o autor do livro
+        .Include(e => e.Leitor) // Inclui o leitor do empréstimo
+        .Where(e => e.DataDevolucao != null) // Filtra apenas os empréstimos que foram devolvidos (DataDevolucao não nula)
+        .OrderBy(e => e.DataDevolucao) // Ordena por data de devolução
+        .ToList();
+
+    if (devolucoes.Any())
+    {
+        return Results.Ok(devolucoes); // Retorna as devoluções com livros e autores
+    }
+
+    return Results.NotFound(); // Caso não haja devoluções
+});
+
 
 app.UseCors("Acesso Total");
 app.Run();

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biblioteca.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20241130034625_InitialCreate")]
+    [Migration("20241130191824_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -37,6 +37,65 @@ namespace Biblioteca.Migrations
                     b.HasKey("AutorId");
 
                     b.ToTable("Autores");
+                });
+
+            modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>
+                {
+                    b.Property<string>("EmprestimoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DataDevolucao")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataEmprestimo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LeitorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LivroId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("PrazoDevolucao")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("EmprestimoId");
+
+                    b.HasIndex("LeitorId");
+
+                    b.HasIndex("LivroId");
+
+                    b.ToTable("Emprestimos");
+                });
+
+            modelBuilder.Entity("Biblioteca.Models.Leitor", b =>
+                {
+                    b.Property<string>("LeitorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CPF")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sobrenome")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LeitorId");
+
+                    b.ToTable("Leitores");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Livro", b =>
@@ -71,6 +130,23 @@ namespace Biblioteca.Migrations
                     b.HasIndex("AutorId");
 
                     b.ToTable("Livros");
+                });
+
+            modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>
+                {
+                    b.HasOne("Biblioteca.Models.Leitor", "Leitor")
+                        .WithMany()
+                        .HasForeignKey("LeitorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Biblioteca.Models.Livro", "Livro")
+                        .WithMany()
+                        .HasForeignKey("LivroId");
+
+                    b.Navigation("Leitor");
+
+                    b.Navigation("Livro");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Livro", b =>

@@ -16,7 +16,7 @@ Content-Type: application/json
     "anoLancamento": 2024,
     "genero": "Drama",
     "editora": "Record",
-    "autorId": "72a5ba9c-0e8b-4513-a073-1820b87e6a7b"
+    "autorId": "7249d53c-b07d-4a6f-99f8-16a3be63c2a9"
 }
 
 ### Requisição para deletar livro especifico
@@ -43,8 +43,8 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Machado",
-    "sobrenome": "de Assis",
+    "nome": "Carla",
+    "sobrenome": "Madeira",
     "pais": "Brasil"
 }
 
@@ -98,3 +98,32 @@ Content-Type: application/json
     "email": "yasmin.faraj@cs.up.edu.br",
     "cpf": 11144477735
 }
+
+// ------ EMPRÉSTIMOS/DEVOLUÇÃO ------
+
+### Listar empréstimos ativos (não foram devolvidos)
+GET http://localhost:5274/biblioteca/emprestimo/listar
+
+### Realizar a ficha do empréstimo
+POST http://localhost:5274/biblioteca/emprestimo/ficha
+Content-Type: application/json
+
+{
+    "livroId": "927a1d15-a111-41ee-987e-c81f7167713e",
+    "leitorId": "8f9c0845-b129-4a30-9fa5-059f772f5721"
+}
+
+### Devolver livro
+PUT http://localhost:5274/biblioteca/emprestimo/devolver/1721fc0f-444b-49f4-a10a-806d4652b3d1
+
+### Alterar empréstimo pelo id
+PUT http://localhost:5274/biblioteca/emprestimo/alterar/e7a73481-2e46-4ea1-a499-f779fc7ef547
+Content-Type: application/json
+
+{
+    "livroId": "1ba714ed-fc34-4af1-a519-da26e88c3a3e",
+    "leitorId": "21be8aa3-b5a2-4d05-9708-a5b6c4cd698c"
+}
+
+### Lista de devoluções
+GET http://localhost:5274/biblioteca/devolucao/listar

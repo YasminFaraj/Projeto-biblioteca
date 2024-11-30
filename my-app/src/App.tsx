@@ -1,13 +1,15 @@
 import React from "react";
-import LivroLista from "./components/pages/livro/LivroLista"
-import LivroCadastro from "./components/pages/livro/LivroCadastro"
-import LivroAlterar from "./components/pages/livro/LivroAlterar"
-import AutorAlterar from "./components/pages/autor/AutorAlterar"
-import AutorLista from "./components/pages/autor/AutorLista"
-import AutorCadastro from "./components/pages/autor/AutorCadastro"
-import LeitorAlterar from "./components/pages/leitor/LeitorAlterar"
-import LeitorLista from "./components/pages/leitor/LeitorLista"
-import LeitorCadastro from "./components/pages/leitor/LeitorCadastro"
+import LivroLista from "./components/pages/livro/LivroLista";
+import LivroCadastro from "./components/pages/livro/LivroCadastro";
+import LivroAlterar from "./components/pages/livro/LivroAlterar";
+import AutorAlterar from "./components/pages/autor/AutorAlterar";
+import AutorLista from "./components/pages/autor/AutorLista";
+import AutorCadastro from "./components/pages/autor/AutorCadastro";
+import LeitorAlterar from "./components/pages/leitor/LeitorAlterar";
+import LeitorLista from "./components/pages/leitor/LeitorLista";
+import LeitorCadastro from "./components/pages/leitor/LeitorCadastro";
+import EmpréstimoCadastro from "./components/pages/emprestimo/EmprestimoCadastro";
+import EmpréstimoLista from "./components/pages/emprestimo/EmprestimoLista";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -37,6 +39,12 @@ function App() {
             <li>
               <Link to="/pages/leitor/cadastrar">Cadastrar Leitores</Link>
             </li>
+            <li>
+              <Link to="/pages/emprestimo/cadastrar">Cadastrar Empréstimo</Link>
+            </li>
+            <li>
+              <Link to="/pages/emprestimo/listar">Listar Empréstimos</Link>
+            </li>
           </ul>
         </nav>
         <Routes>
@@ -50,6 +58,8 @@ function App() {
           <Route path="/pages/leitor/listar" element={<LeitorLista />} />
           <Route path="/pages/leitor/alterar/:id" element={<LeitorAlterar />} />
           <Route path="/pages/leitor/cadastrar" element={<LeitorCadastro />} />
+          <Route path="/pages/emprestimo/cadastrar" element={<EmpréstimoCadastro />} />
+          <Route path="/pages/emprestimo/listar" element={<EmpréstimoLista />} />
         </Routes>
       </BrowserRouter>
     </div>

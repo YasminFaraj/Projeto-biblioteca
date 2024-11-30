@@ -3,19 +3,18 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Autor } from "../../../models/Autor";
 
-function AutorLista(){
+function AutorLista() {
     const [autores, setAutores] = useState<Autor[]>([]);
 
     useEffect(() => {
         fetch("http://localhost:5274/biblioteca/autor/listar", {
-            method: 'GET', 
+            method: 'GET',
         })
-            .then((resposta) => {
-                return resposta.json();
+            .then((resposta) => resposta.json()) // Retorno do fetch é tratado como 'unknown'
+            .then((autores: Autor[]) => { // Agora definimos explicitamente que 'autores' é do tipo Autor[]
+                setAutores(autores); // Atualiza o estado corretamente
             })
-            .then((autores) => {
-                setAutores(autores);
-            });
+            .catch((erro) => console.error("Erro ao carregar os autores:", erro));
     }, []);
 
     function deletar(id: string) {
@@ -23,6 +22,9 @@ function AutorLista(){
             .delete(`http://localhost:5274/biblioteca/autor/deletar/${id}`)
             .then((resposta) => {
                 console.log(resposta.data);
+            })
+            .catch((erro) => {
+                console.error("Erro ao deletar o autor:", erro);
             });
     }
 
@@ -48,14 +50,10 @@ function AutorLista(){
                             <td>{autor.sobrenome}</td>
                             <td>{autor.pais}</td>
                             <td>
-                                <button onClick={() => deletar(autor.autorId!)}>
-                                    Deletar
-                                </button> 
+                                <button onClick={() => deletar(autor.autorId!)}>Deletar</button>
                             </td>
                             <td>
-                                <Link to={`/pages/autor/alterar/${autor.autorId}`}>
-                                    Alterar
-                                </Link>
+                                <Link to={`/pages/autor/alterar/${autor.autorId}`}>Alterar</Link>
                             </td>
                         </tr>
                     ))}

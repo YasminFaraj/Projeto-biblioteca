@@ -1,6 +1,8 @@
 ### Requisição para a raiz da aplicação
 GET http://localhost:5274
 
+// ------ LIVROS -------
+
 ### Requisição para listar livros
 GET http://localhost:5274/biblioteca/livro/listar
 
@@ -31,6 +33,8 @@ Content-Type: application/json
 ### Buscar livro específico pelo id
 GET http://localhost:5274/biblioteca/livro/buscar/5d06b6e2-3635-45ba-aa41-4db1242a40ca
 
+// ------ AUTORES -------
+
 ### Listar autores
 GET http://localhost:5274/biblioteca/autor/listar
 
@@ -59,3 +63,38 @@ Content-Type: application/json
 
 ### Buscar autor pelo id
 GET http://localhost:5274/biblioteca/autor/buscar/4b29201d-c727-445f-8fed-376a440ac579
+
+// ------ LEITORES -------
+
+### Listar leitores/clientes
+GET http://localhost:5274/biblioteca/leitor/listar
+
+### Cadastrar leitores/clientes
+POST http://localhost:5274/biblioteca/leitor/cadastrar
+Content-Type: application/json
+
+{
+    "nome": "Laura",
+    "sobrenome": "Santos Oliveira",
+    "telefone": "(41) 99187-8044",
+    "email": "laura.oliveira4@cs.up.edu.br",
+    "cpf": 11144477735
+}
+
+### Deletar leitor/cliente pelo id
+DELETE http://localhost:5274/biblioteca/leitor/deletar/5d54b22c-819b-4561-9402-5c6645afedae
+
+### Buscar leitor/cliente pelo id
+GET http://localhost:5274/biblioteca/leitor/buscar/5d54b22c-819b-4561-9402-5c6645afedae
+
+### Alterar leitor/cliente pelo id
+PUT http://localhost:5274/biblioteca/leitor/alterar/5d54b22c-819b-4561-9402-5c6645afedae
+Content-Type: application/json
+
+{
+    "nome": "Yasmin",
+    "sobrenome": "Faraj",
+    "telefone": "(42) 99999-1111",
+    "email": "yasmin.faraj@cs.up.edu.br",
+    "cpf": 11144477735
+}

@@ -36,6 +36,32 @@ namespace Biblioteca.Migrations
                     b.ToTable("Autores");
                 });
 
+            modelBuilder.Entity("Biblioteca.Models.Leitor", b =>
+                {
+                    b.Property<string>("LeitorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CPF")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sobrenome")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LeitorId");
+
+                    b.ToTable("Leitores");
+                });
+
             modelBuilder.Entity("Biblioteca.Models.Livro", b =>
                 {
                     b.Property<string>("LivroId")

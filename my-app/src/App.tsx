@@ -5,6 +5,9 @@ import LivroAlterar from "./components/pages/livro/LivroAlterar"
 import AutorAlterar from "./components/pages/autor/AutorAlterar"
 import AutorLista from "./components/pages/autor/AutorLista"
 import AutorCadastro from "./components/pages/autor/AutorCadastro"
+import LeitorAlterar from "./components/pages/leitor/LeitorAlterar"
+import LeitorLista from "./components/pages/leitor/LeitorLista"
+import LeitorCadastro from "./components/pages/leitor/LeitorCadastro"
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -28,6 +31,12 @@ function App() {
             <li>
               <Link to="/pages/autor/cadastrar">Cadastrar Autores</Link>
             </li>
+            <li>
+              <Link to="/pages/leitor/listar">Listar Leitores</Link>
+            </li>
+            <li>
+              <Link to="/pages/leitor/cadastrar">Cadastrar Leitores</Link>
+            </li>
           </ul>
         </nav>
         <Routes>
@@ -38,6 +47,9 @@ function App() {
           <Route path="/pages/autor/listar" element={<AutorLista />} />
           <Route path="/pages/autor/alterar/:id" element={<AutorAlterar />} />
           <Route path="/pages/autor/cadastrar" element={<AutorCadastro />} />
+          <Route path="/pages/leitor/listar" element={<LeitorLista />} />
+          <Route path="/pages/leitor/alterar/:id" element={<LeitorAlterar />} />
+          <Route path="/pages/leitor/cadastrar" element={<LeitorCadastro />} />
         </Routes>
       </BrowserRouter>
     </div>
@@ -45,4 +57,3 @@ function App() {
 }
 
 export default App;
-

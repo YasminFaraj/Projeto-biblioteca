@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Autor } from "../../../models/Autor";
-import axios from "axios";
 
 function AutorCadastro() {
     const [nome, setNome] = useState("");
@@ -26,8 +25,8 @@ function AutorCadastro() {
         .then((resposta) => {
             return resposta.json();
         })
-        .then((livro) => {
-            console.log("Autor cadastrado", livro);
+        .then((autor) => {
+            console.log("Autor cadastrado", autor);
         });
     }
 

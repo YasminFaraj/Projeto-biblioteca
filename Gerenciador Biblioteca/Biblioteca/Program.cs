@@ -17,7 +17,9 @@ var app = builder.Build();
 
 app.MapGet("/", () => "API de Livros");
 
-// Listar livro sem autor
+// ------ LIVROS -------
+
+// Listar livro com autor
 app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Livros.Any())
@@ -85,6 +87,8 @@ app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] 
     return Results.Ok(livro);
 });
 
+// ------ AUTORES -------
+
 // Cadastrar autor
 app.MapPost("/biblioteca/autor/cadastrar", ([FromBody] Autor autor, [FromServices] AppDataContext ctx) =>
 {
@@ -133,6 +137,60 @@ app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] string id, [FromBody] 
     autor.Pais = autorAlterado.Pais;
     ctx.SaveChanges();
     return Results.Ok(autor);
+});
+
+// ------ LEITORES -------
+
+// Cadastrar leitor/cliente
+app.MapPost("/biblioteca/leitor/cadastrar", ([FromBody] Leitor leitor, [FromServices] AppDataContext ctx) =>
+{
+    ctx.Leitores.Add(leitor);
+    ctx.SaveChanges();
+    return Results.Created("", leitor);
+});
+
+// Listar leitor/cliente
+app.MapGet("/biblioteca/leitor/listar", ([FromServices] AppDataContext ctx) =>
+{
+    if (ctx.Leitores.Any()){
+        return Results.Ok(ctx.Leitores.ToList());
+    }    
+    return Results.NotFound();
+});
+
+// Buscar leitor/cliente pelo id
+app.MapGet("/biblioteca/leitor/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Leitor? leitor = ctx.Leitores.Find(id);
+    if (leitor == null){
+        return Results.NotFound();
+    } 
+    return Results.Ok(leitor);
+});
+
+// Deletar leitor/cliente pelo id
+app.MapDelete("/biblioteca/leitor/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Leitor? leitor = ctx.Leitores.Find(id);
+    if(leitor == null){
+        return Results.NotFound();
+    }
+    ctx.Leitores.Remove(leitor);
+    ctx.SaveChanges();
+    return Results.Ok(leitor);
+});
+
+// Alterar autor pelo id
+app.MapPut("/biblioteca/leitor/alterar/{id}", ([FromRoute] string id, [FromBody] Leitor leitorAlterado, [FromServices] AppDataContext ctx) => {
+    Leitor? leitor = ctx.Leitores.Find(id);
+    if(leitor == null){
+        return Results.NotFound();
+    }
+    leitor.Nome = leitorAlterado.Nome;
+    leitor.Sobrenome = leitorAlterado.Sobrenome;
+    leitor.Email = leitorAlterado.Email;
+    leitor.Telefone = leitorAlterado.Telefone;
+    leitor.CPF = leitorAlterado.CPF;
+    ctx.SaveChanges();
+    return Results.Ok(leitor);
 });
 
 app.UseCors("Acesso Total");

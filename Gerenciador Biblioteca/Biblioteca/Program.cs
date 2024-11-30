@@ -1,73 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Biblioteca.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDataContext>();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve; // Manter apenas esta linha
-        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        options.JsonSerializerOptions.WriteIndented = true; 
-        // removi a linha abaixo para evitar conflitos
-        // options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-});
 
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors(options =>
+    options.AddPolicy("Acesso Total",
+        configs => configs
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod())
+);
 
 var app = builder.Build();
-
-List<Autor> autores = new List<Autor>{
-    new Autor { Nome = "Taylor J. R." },
-    new Autor { Nome = "Emily Bronte" },
-};
-
-List<Livro> livros = new List<Livro>{
-    new Livro {
-        Titulo = "Os Sete Maridos de Evelyn Hugo",
-        QtdExemplares = 3, 
-        LivrosAutores = new List<LivroAutor>{
-            new LivroAutor { Autor = autores[0] }
-        }
-    },
-    new Livro {
-        Titulo = "O Morro dos Ventos Uivantes", 
-        LivrosAutores = new List<LivroAutor>{
-            new LivroAutor { Autor = autores[1] }
-        },
-        QtdExemplares = 2},
-};
 
 app.MapGet("/", () => "API de Livros");
 
 // Listar livro sem autor
 app.MapGet("/biblioteca/livro/listar", ([FromServices] AppDataContext ctx) =>
 {
-    if (ctx.Livros.Any()){
-        var livrosSemAutores = ctx.Livros
-            .Select(l => new{
-                l.LivroId,
-                l.Titulo,
-                l.Genero,
-                l.QtdExemplares,
-                l.CriadoEm,
-                l.AnoLancamento,
-                l.Editora
-            })
-            .ToList();
-
-        return Results.Ok(livrosSemAutores);
-        //return Results.Ok(ctx.Livros.Include(x => x.LivrosAutores.ToList()));
-    }    
+    if (ctx.Livros.Any())
+    {
+        return Results.Ok(ctx.Livros.Include(x => x.Autor).ToList());
+    }
     return Results.NotFound();
 });
 
@@ -81,68 +37,17 @@ app.MapGet("/biblioteca/livro/buscar/{id}", ([FromRoute] string id, [FromService
 });
 
 // Cadastrar livro
-app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] LivroDTO livroDto, [FromServices] AppDataContext ctx) =>
+app.MapPost("/biblioteca/livro/cadastrar", ([FromBody] Livro livro, [FromServices] AppDataContext ctx) =>
 {
-    if (livroDto == null)
-    {
-        return Results.BadRequest("Dados do livro não podem ser nulos.");
-    }
-
-    if (string.IsNullOrEmpty(livroDto.Titulo))
-    {
-        return Results.BadRequest("O título do livro é obrigatório.");
-    }
-
-    var livro = new Livro
-    {
-        Titulo = livroDto.Titulo,
-        Genero = livroDto.Genero,
-        QtdExemplares = livroDto.QtdExemplares,
-        AnoLancamento = livroDto.AnoLancamento,
-        Editora = livroDto.Editora,
-        LivrosAutores = new List<LivroAutor>()
-    };
-
-    foreach (var livroAutorDto in livroDto.LivrosAutores)
-    {
-        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorDto.AutorId);
-        if (autorExistente != null)
-        {
-            livro.LivrosAutores.Add(new LivroAutor { Autor = autorExistente, Livro = livro });
-        }
-        else
-        {
-            var novoAutor = new Autor
-            {
-                AutorId = Guid.NewGuid(),
-                Nome = livroAutorDto.Nome,
-                Sobrenome = livroAutorDto.Sobrenome,
-                Pais = livroAutorDto.Pais
-            };
-
-            ctx.Autores.Add(novoAutor);
-
-            livro.LivrosAutores.Add(new LivroAutor { Autor = novoAutor, Livro = livro });
-        }
-    }
-
     Autor? autor = ctx.Autores.Find(livro.AutorId);
-    if(autor == null){
+    if (autor is null)
+    {
         return Results.NotFound();
     }
     livro.Autor = autor;
     ctx.Livros.Add(livro);
-
-    try
-    {
-        ctx.SaveChanges();
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem("Ocorreu um erro ao cadastrar o livro. Detalhes: " + ex.Message, statusCode: 500);
-    }
-
-    return Results.Created($"/biblioteca/livro/{livro.LivroId}", livro);
+    ctx.SaveChanges();
+    return Results.Created("", livro);
 });
 
 // Deletar livro pelo id
@@ -157,47 +62,26 @@ app.MapDelete("/biblioteca/livro/deletar/{id}", ([FromRoute] string id, [FromSer
 });
 
 // Alterar livro pelo id
-app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] LivroDTO livroAlterado, [FromServices] AppDataContext ctx) =>
+app.MapPut("/biblioteca/livro/alterar/{id}", ([FromRoute] string id, [FromBody] Livro livroAlterado, [FromServices] AppDataContext ctx) =>
 {
-    // Busca o livro pelo ID
-    var livro = ctx.Livros
-        .Include(l => l.LivrosAutores)
-        .ThenInclude(la => la.Autor)
-        .FirstOrDefault(l => l.LivroId == id);
-
+    Livro? livro = ctx.Livros.Find(id);
     if (livro == null)
     {
-        return Results.NotFound("Livro não encontrado.");
+        return Results.NotFound();
     }
-
+    Autor? autor = ctx.Autores.Find(livroAlterado.AutorId);
+    if (autor is null)
+    {
+        return Results.NotFound();
+    }
+    livro.Autor = autor;
     livro.Titulo = livroAlterado.Titulo;
     livro.QtdExemplares = livroAlterado.QtdExemplares;
-    livro.Editora = livroAlterado.Editora;
-    livro.AnoLancamento = livroAlterado.AnoLancamento;
     livro.Genero = livroAlterado.Genero;
-
-    // Tira autores antigos e coloca apenas os novos
-    livro.LivrosAutores.Clear();
-
-    foreach (var livroAutorDto in livroAlterado.LivrosAutores)
-    {
-        var autorExistente = ctx.Autores.FirstOrDefault(a => a.AutorId == livroAutorDto.AutorId);
-        if (autorExistente != null)
-        {
-            livro.LivrosAutores.Add(new LivroAutor { AutorId = autorExistente.AutorId, LivroId = livro.LivroId });
-        }
-    }
-
-    // Salva ou retorna um erro
-    try
-    {
-        ctx.SaveChanges();
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem("Erro ao alterar o livro: " + ex.Message, statusCode: 500);
-    }
-
+    livro.AnoLancamento = livroAlterado.AnoLancamento;
+    livro.Editora = livroAlterado.Editora;
+    ctx.Livros.Update(livro);
+    ctx.SaveChanges();
     return Results.Ok(livro);
 });
 
@@ -219,7 +103,7 @@ app.MapGet("/biblioteca/autor/listar", ([FromServices] AppDataContext ctx) =>
 });
 
 // Buscar autor pelo id
-app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] Guid id, [FromServices] AppDataContext ctx) =>{
+app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
     Autor? autor = ctx.Autores.Find(id);
     if (autor == null){
         return Results.NotFound();
@@ -228,7 +112,7 @@ app.MapGet("/biblioteca/autor/buscar/{id}", ([FromRoute] Guid id, [FromServices]
 });
 
 // Deletar autor pelo id
-app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] Guid id, [FromServices] AppDataContext ctx) =>{
+app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
     Autor? autor = ctx.Autores.Find(id);
     if(autor == null){
         return Results.NotFound();
@@ -236,30 +120,6 @@ app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] Guid id, [FromServi
     ctx.Autores.Remove(autor);
     ctx.SaveChanges();
     return Results.Ok(autor);
-});
-
-// Listar livros com autores
-app.MapGet("/biblioteca/livro/listar_com_autores", ([FromServices] AppDataContext ctx) =>
-{
-    var livrosComAutores = ctx.Livros
-        .Include(l => l.LivrosAutores) 
-            .ThenInclude(la => la.Autor) 
-        .Select(l => new
-        {
-            l.LivroId,
-            l.Titulo,
-            l.Genero,
-            l.QtdExemplares,
-            l.CriadoEm,
-            l.AnoLancamento,
-            l.Editora,
-            Autores = l.LivrosAutores.Select(la => new {
-                NomeCompleto = la.Autor!.Nome + " " + la.Autor.Sobrenome
-            }).ToList()
-        })
-        .ToList();
-
-    return Results.Ok(livrosComAutores);
 });
 
 // Alterar autor pelo id
@@ -271,12 +131,9 @@ app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] Guid id, [FromBody] Au
     autor.Nome = autorAlterado.Nome;
     autor.Sobrenome = autorAlterado.Sobrenome;
     autor.Pais = autorAlterado.Pais;
-    autor.LivrosAutores = autorAlterado.LivrosAutores;
     ctx.SaveChanges();
     return Results.Ok(autor);
 });
 
-app.UseAuthorization();
-app.MapControllers();
-app.UseCors("AllowAll");
+app.UseCors("Acesso Total");
 app.Run();

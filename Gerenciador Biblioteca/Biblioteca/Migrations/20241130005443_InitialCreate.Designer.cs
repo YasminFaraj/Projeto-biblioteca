@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biblioteca.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20241017232010_InitialCreate4")]
-    partial class InitialCreate4
+    [Migration("20241130005443_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,9 @@ namespace Biblioteca.Migrations
                     b.Property<int>("AnoLancamento")
                         .HasColumnType("INTEGER");
 
+                    b.Property<Guid>("AutorId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("TEXT");
 
@@ -65,6 +68,8 @@ namespace Biblioteca.Migrations
 
                     b.HasKey("LivroId");
 
+                    b.HasIndex("AutorId");
+
                     b.ToTable("Livros");
                 });
 
@@ -81,6 +86,17 @@ namespace Biblioteca.Migrations
                     b.HasIndex("AutorId");
 
                     b.ToTable("LivrosAutores");
+                });
+
+            modelBuilder.Entity("Biblioteca.Models.Livro", b =>
+                {
+                    b.HasOne("Biblioteca.Models.Autor", "Autor")
+                        .WithMany()
+                        .HasForeignKey("AutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Autor");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.LivroAutor", b =>

@@ -9,29 +9,23 @@ POST http://localhost:5274/biblioteca/livro/cadastrar
 Content-Type: application/json
 
 {
-    "titulo": "Teste",
-    "livrosAutores": [
-        {"autorId": "744d65f9-9750-4fa8-bfdc-b3cc8353020b"}
-    ],
+    "titulo": "Tudo é Rio",
     "qtdExemplares": 3,
     "anoLancamento": 2024,
-    "genero": "Ficção",
-    "editora": "Record"
+    "genero": "Drama",
+    "editora": "Record",
+    "autorId": "9b47764e-0294-47a4-ac18-9fde73b20b56"
 }
 
 ### Requisição para deletar livro especifico
 DELETE http://localhost:5274/biblioteca/livro/deletar/8c0096fd-7242-40a0-8093-2da8e6781002
 
 ### Requisição para alterar livro específico
-PUT http://localhost:5274/biblioteca/livro/alterar/20a725dd-360f-4dc0-a26e-3a29b5ac73ac
+PUT http://localhost:5274/biblioteca/livro/alterar/1d626b02-5d64-488c-a34d-ff588737f783
 Content-Type: application/json
 
 {
-    "titulo": "Teste",
-    "qtdexemplares": 1,
-    "livrosAutores": [
-        {"autorId": "4b29201d-c727-445f-8fed-376a440ac579"}
-    ]
+    "autorId": "5aa5ca0c-0f3f-4acb-9eb2-effc1a1938fa"
 }
 
 ### Buscar livro específico pelo id
@@ -45,8 +39,8 @@ POST http://localhost:5274/biblioteca/autor/cadastrar
 Content-Type: application/json
 
 {
-    "nome": "Teste",
-    "sobrenome": "1",
+    "nome": "Machado",
+    "sobrenome": "de Assis",
     "pais": "Brasil"
 }
 
@@ -65,6 +59,3 @@ Content-Type: application/json
 
 ### Buscar autor pelo id
 GET http://localhost:5274/biblioteca/autor/buscar/4b29201d-c727-445f-8fed-376a440ac579
-
-### Listar com autores
-GET http://localhost:5274/biblioteca/livro/listar_com_autores

@@ -19,8 +19,7 @@ namespace Biblioteca.Migrations
 
             modelBuilder.Entity("Biblioteca.Models.Autor", b =>
                 {
-                    b.Property<Guid>("AutorId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("AutorId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
@@ -45,6 +44,10 @@ namespace Biblioteca.Migrations
                     b.Property<int>("AnoLancamento")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("AutorId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("TEXT");
 
@@ -62,51 +65,20 @@ namespace Biblioteca.Migrations
 
                     b.HasKey("LivroId");
 
-                    b.ToTable("Livros");
-                });
-
-            modelBuilder.Entity("Biblioteca.Models.LivroAutor", b =>
-                {
-                    b.Property<string>("LivroId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("AutorId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LivroId", "AutorId");
-
                     b.HasIndex("AutorId");
 
-                    b.ToTable("LivrosAutores");
-                });
-
-            modelBuilder.Entity("Biblioteca.Models.LivroAutor", b =>
-                {
-                    b.HasOne("Biblioteca.Models.Autor", "Autor")
-                        .WithMany("LivrosAutores")
-                        .HasForeignKey("AutorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Biblioteca.Models.Livro", "Livro")
-                        .WithMany("LivrosAutores")
-                        .HasForeignKey("LivroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Autor");
-
-                    b.Navigation("Livro");
-                });
-
-            modelBuilder.Entity("Biblioteca.Models.Autor", b =>
-                {
-                    b.Navigation("LivrosAutores");
+                    b.ToTable("Livros");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Livro", b =>
                 {
-                    b.Navigation("LivrosAutores");
+                    b.HasOne("Biblioteca.Models.Autor", "Autor")
+                        .WithMany()
+                        .HasForeignKey("AutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Autor");
                 });
 #pragma warning restore 612, 618
         }

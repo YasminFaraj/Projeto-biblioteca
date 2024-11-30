@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Livro } from "../../../models/Livro";
 import { Autor } from "../../../models/Autor";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 function LivroCadastro() {
-    const { id } = useParams();
     const [autores, setAutores] = useState<Autor[]>([]);
     const [titulo, setTitulo] = useState("");
     const [genero, setGenero] = useState("");
@@ -20,7 +18,7 @@ function LivroCadastro() {
             .then((resposta) => {
                 setAutores(resposta.data);
             })
-    });
+    }, []);
 
     function enviarLivro(e: any) {
         e.preventDefault();
@@ -119,7 +117,7 @@ function LivroCadastro() {
                                 value={autor.autorId}
                                 key={autor.autorId}
                             >
-                                {autor.nome}
+                                {autor.nome + ' ' + autor.sobrenome}
                             </option>
                         ))}
                     </select>

@@ -128,7 +128,7 @@ function LivroAlterar(){
                                 value={autor.autorId}
                                 key={autor.autorId}
                             >
-                                {autor.nome}
+                                {autor.nome + ' ' + autor.sobrenome}
                             </option>
                         ))}
                     </select>

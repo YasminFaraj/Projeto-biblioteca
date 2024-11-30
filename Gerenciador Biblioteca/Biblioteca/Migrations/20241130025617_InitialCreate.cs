@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Biblioteca.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate4 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace Biblioteca.Migrations
                 name: "Autores",
                 columns: table => new
                 {
-                    AutorId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AutorId = table.Column<string>(type: "TEXT", nullable: false),
                     Nome = table.Column<string>(type: "TEXT", nullable: true),
                     Sobrenome = table.Column<string>(type: "TEXT", nullable: true),
                     Pais = table.Column<string>(type: "TEXT", nullable: true)
@@ -35,40 +35,23 @@ namespace Biblioteca.Migrations
                     QtdExemplares = table.Column<int>(type: "INTEGER", nullable: false),
                     CriadoEm = table.Column<DateTime>(type: "TEXT", nullable: false),
                     AnoLancamento = table.Column<int>(type: "INTEGER", nullable: false),
-                    Editora = table.Column<string>(type: "TEXT", nullable: true)
+                    Editora = table.Column<string>(type: "TEXT", nullable: true),
+                    AutorId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Livros", x => x.LivroId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LivrosAutores",
-                columns: table => new
-                {
-                    AutorId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    LivroId = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LivrosAutores", x => new { x.LivroId, x.AutorId });
                     table.ForeignKey(
-                        name: "FK_LivrosAutores_Autores_AutorId",
+                        name: "FK_Livros_Autores_AutorId",
                         column: x => x.AutorId,
                         principalTable: "Autores",
                         principalColumn: "AutorId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LivrosAutores_Livros_LivroId",
-                        column: x => x.LivroId,
-                        principalTable: "Livros",
-                        principalColumn: "LivroId",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LivrosAutores_AutorId",
-                table: "LivrosAutores",
+                name: "IX_Livros_AutorId",
+                table: "Livros",
                 column: "AutorId");
         }
 
@@ -76,13 +59,10 @@ namespace Biblioteca.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "LivrosAutores");
+                name: "Livros");
 
             migrationBuilder.DropTable(
                 name: "Autores");
-
-            migrationBuilder.DropTable(
-                name: "Livros");
         }
     }
 }

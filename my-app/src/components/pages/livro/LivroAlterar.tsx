@@ -29,7 +29,7 @@ function LivroAlterar(){
                     buscarAutores();
                 })
         }
-    }, []);
+    }, [id]);
 
     function buscarAutores() {
         axios

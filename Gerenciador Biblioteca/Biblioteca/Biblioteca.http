@@ -14,7 +14,7 @@ Content-Type: application/json
     "anoLancamento": 2024,
     "genero": "Drama",
     "editora": "Record",
-    "autorId": "9b47764e-0294-47a4-ac18-9fde73b20b56"
+    "autorId": "72a5ba9c-0e8b-4513-a073-1820b87e6a7b"
 }
 
 ### Requisição para deletar livro especifico
@@ -48,12 +48,12 @@ Content-Type: application/json
 DELETE http://localhost:5274/biblioteca/autor/deletar/4ea5a38e-fd33-42b4-9de4-b6585a9ee93d
 
 ### Alterar autor pelo id
-PUT http://localhost:5274/biblioteca/autor/alterar/4b29201d-c727-445f-8fed-376a440ac579
+PUT http://localhost:5274/biblioteca/autor/alterar/72a5ba9c-0e8b-4513-a073-1820b87e6a7b
 Content-Type: application/json
 
 {
-    "nome": "Laura",
-    "sobrenome": "Yasmin",
+    "nome": "Carla",
+    "sobrenome": "Madeira",
     "pais": "Brasil"
 }
 

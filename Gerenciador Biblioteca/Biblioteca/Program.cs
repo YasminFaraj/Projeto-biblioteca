@@ -123,7 +123,7 @@ app.MapDelete("/biblioteca/autor/deletar/{id}", ([FromRoute] string id, [FromSer
 });
 
 // Alterar autor pelo id
-app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] Guid id, [FromBody] Autor autorAlterado, [FromServices] AppDataContext ctx) => {
+app.MapPut("/biblioteca/autor/alterar/{id}", ([FromRoute] string id, [FromBody] Autor autorAlterado, [FromServices] AppDataContext ctx) => {
     Autor? autor = ctx.Autores.Find(id);
     if(autor == null){
         return Results.NotFound();

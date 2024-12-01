@@ -259,7 +259,6 @@ app.MapPut("/biblioteca/emprestimo/devolver/{id}", ([FromRoute] string id, [From
     return Results.Ok(emprestimo);
 });
 
-// Alterar emprestimo pelo id
 app.MapPut("/biblioteca/emprestimo/alterar/{id}", ([FromRoute] string id, [FromBody] Emprestimo emprestimoAlterado, [FromServices] AppDataContext ctx) =>
 {
     // Busca o empréstimo original no banco
@@ -282,7 +281,21 @@ app.MapPut("/biblioteca/emprestimo/alterar/{id}", ([FromRoute] string id, [FromB
         return Results.NotFound("Livro ou Leitor não encontrados.");
     }
 
-    // Atualiza os relacionamentos e outras informações, se necessário
+    // Incrementa a quantidade do livro devolvido (antigo livro)
+    if (emprestimo.Livro != null)
+    {
+        emprestimo.Livro.QtdExemplares++;
+    }
+
+    // Decrementa a quantidade do novo livro
+    novoLivro.QtdExemplares--;
+
+    if (novoLivro.QtdExemplares < 0)
+    {
+        return Results.BadRequest("O novo livro não possui exemplares disponíveis.");
+    }
+
+    // Atualiza os relacionamentos e outras informações
     emprestimo.Livro = novoLivro;
     emprestimo.Leitor = novoLeitor;
 

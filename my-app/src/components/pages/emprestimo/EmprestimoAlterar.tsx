@@ -51,6 +51,7 @@ function AlterarEmprestimo() {
         const emprestimoAtualizado = {
             livroId: livroId,
             leitorId: leitorId,
+
         };
 
         // Atualizar o empréstimo

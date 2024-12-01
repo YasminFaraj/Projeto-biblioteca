@@ -333,15 +333,32 @@ app.MapGet("/biblioteca/emprestimo/buscar/{id}", ([FromRoute] string id, [FromSe
     return Results.Ok(emprestimo);
 });
 
-// Deletar emprésitmo pelo id
-app.MapDelete("/biblioteca/emprestimo/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
-    Emprestimo? emprestimo = ctx.Emprestimos.Find(id);
-    if(emprestimo == null){
-        return Results.NotFound();
+// Deletar empréstimo pelo id
+app.MapDelete("/biblioteca/emprestimo/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>
+{
+    // Busca o empréstimo no banco
+    Emprestimo? emprestimo = ctx.Emprestimos
+        .Include(e => e.Livro) // Inclui o relacionamento com o livro
+        .FirstOrDefault(e => e.EmprestimoId == id);
+
+    if (emprestimo == null)
+    {
+        return Results.NotFound("Empréstimo não encontrado.");
     }
+
+    // Incrementa a quantidade de exemplares do livro associado
+    if (emprestimo.Livro != null)
+    {
+        emprestimo.Livro.QtdExemplares++;
+    }
+
+    // Remove o empréstimo do banco
     ctx.Emprestimos.Remove(emprestimo);
+
+    // Salva as alterações no banco
     ctx.SaveChanges();
-    return Results.Ok(emprestimo);
+
+    return Results.Ok("Empréstimo deletado com sucesso.");
 });
 
 app.UseCors("Acesso Total");

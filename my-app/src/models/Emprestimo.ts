@@ -1,16 +1,17 @@
+import { Autor } from "./Autor";
+import { Leitor } from "./Leitor";
+import { Livro } from "./Livro";
+
 export interface Emprestimo {
     emprestimoId: string;
-    livroId: string;
-    livro: {
-        livroId: string;
-        titulo: string;
-    };
-    leitorId: string;
-    leitor: {
-        leitorId: string;
-        nome: string;
-    };
-    dataEmprestimo: Date;
-    prazoDevolucao: Date;
+    dataEmprestimo: string;
+    prazoDevolucao: string;
+    dataDevolucao: string;
     ativo: boolean;
+    livroId: string;
+    autorId: string;
+    leitorId: string;
+    autor: Autor;
+    leitor: Leitor;
+    livro: Livro;
 }

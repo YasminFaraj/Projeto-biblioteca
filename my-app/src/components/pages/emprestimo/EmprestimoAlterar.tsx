@@ -1,66 +1,130 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Livro } from "../../../models/Livro";
+import { Leitor } from "../../../models/Leitor";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Emprestimo } from "../../../models/Emprestimo";
 
-function EmprestimoAlterar() {
-    const { id } = useParams<{ id: string }>();
-    const [emprestimo, setEmprestimo] = useState<Emprestimo | null>(null);
+function AlterarEmprestimo() {
+    const { id } = useParams();
+    const [livros, setLivros] = useState<Livro[]>([]);
+    const [leitores, setLeitores] = useState<Leitor[]>([]);
+    const [livroId, setLivroId] = useState("");
+    const [leitorId, setLeitorId] = useState("");
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchEmprestimo = async () => {
-            try {
-                const response = await axios.get<Emprestimo>(`http://localhost:5274/biblioteca/emprestimo/${id}`);
-                setEmprestimo(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar empréstimo:", error);
-            }
-        };
-
-        if (id) {
-            fetchEmprestimo();
+        if(id){
+            axios
+            .get<Emprestimo[]>(`http://localhost:5274/biblioteca/emprestimo/buscar/${id}`)
+            .then(() => {
+                buscarLivros();
+                buscarLeitores();
+            })
+            .catch((error) => {
+                console.error("Erro ao buscar dados:", error);
+            });
         }
     }, [id]);
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        if (emprestimo) {
-            try {
-                await axios.put(`http://localhost:5274/biblioteca/emprestimo/alterar/${id}`, emprestimo);
-                navigate("/components/emprestimo");
-            } catch (error) {
-                console.error("Erro ao atualizar empréstimo:", error);
-            }
-        }
+    function buscarLivros() {
+        axios
+            .get<Livro[]>("http://localhost:5274/biblioteca/livro/listar")
+            .then((resposta) => {
+                setLivros(resposta.data);
+            })
+    }
+
+    function buscarLeitores() {
+        axios
+            .get<Leitor[]>("http://localhost:5274/biblioteca/leitor/listar")
+            .then((resposta) => {
+                setLeitores(resposta.data);
+            })
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        // Criar o objeto atualizado do empréstimo
+        const emprestimoAtualizado = {
+            livroId: livroId,
+            leitorId: leitorId,
+        };
+
+        // Atualizar o empréstimo
+        axios
+            .put(`http://localhost:5274/biblioteca/emprestimo/alterar/${id}`, emprestimoAtualizado, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(() => {
+                console.log("Empréstimo alterado com sucesso");
+                navigate("/pages/emprestimo/listar");
+            })
+            .catch((error) => {
+                console.error("Erro ao alterar empréstimo:", error);
+            });
     };
 
-    if (!emprestimo) return <div>Carregando...</div>;
-
     return (
-        <div className="container">
+        <div id="alterar_emprestimo" className="container">
             <h1>Alterar Empréstimo</h1>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label>Data Empréstimo:</label>
-                    <input
-                        type="date"
-                        value={emprestimo.dataEmprestimo.toISOString().slice(0, 10)}
-                        onChange={(e) => setEmprestimo({ ...emprestimo, dataEmprestimo: new Date(e.target.value) })}
-                    />
+                    <label>Título do livro:</label>
+                    <select
+                        value={livroId}
+                        onChange={(e) => setLivroId(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecione um livro</option>
+                        {livros.map((livro) => (
+                            <option key={livro.livroId} value={livro.livroId}>
+                                {livro.titulo}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
                 <div>
-                    <label>Prazo Devolução:</label>
-                    <input
-                        type="date"
-                        value={emprestimo.prazoDevolucao.toISOString().slice(0, 10)}
-                        onChange={(e) => setEmprestimo({ ...emprestimo, prazoDevolucao: new Date(e.target.value) })}
-                    />
+                    <label>Autor do livro:</label>
+                    <select
+                        value={livroId}
+                        onChange={(e) => setLivroId(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecione um autor</option>
+                        {livros.map((livro) => (
+                            <option key={livro.livroId} value={livro.livroId}>
+                                {livro.autor?.nome + " " + livro.autor?.sobrenome}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
+                <div>
+                    <label>CPF do leitor:</label>
+                    <select
+                        value={leitorId}
+                        onChange={(e) => setLeitorId(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecione o CPF do leitor</option>
+                        {leitores.map((leitor) => (
+                            <option key={leitor.leitorId} value={leitor.leitorId}>
+                                {leitor.cpf}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <button type="submit">Salvar Alterações</button>
             </form>
         </div>
     );
 }
 
-export default EmprestimoAlterar;
+export default AlterarEmprestimo;

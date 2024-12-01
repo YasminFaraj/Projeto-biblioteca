@@ -299,7 +299,7 @@ app.MapGet("/biblioteca/devolucao/listar", ([FromServices] AppDataContext ctx) =
         .Include(e => e.Livro) // Inclui o livro do empréstimo
         .ThenInclude(l => l.Autor) // Inclui o autor do livro
         .Include(e => e.Leitor) // Inclui o leitor do empréstimo
-        .Where(e => e.DataDevolucao != null) // Filtra apenas os empréstimos que foram devolvidos (DataDevolucao não nula)
+        .Where(e => !e.Ativo) // Filtra apenas os empréstimos que foram devolvidos (DataDevolucao não nula)
         .OrderBy(e => e.DataDevolucao) // Ordena por data de devolução
         .ToList();
 
@@ -311,6 +311,25 @@ app.MapGet("/biblioteca/devolucao/listar", ([FromServices] AppDataContext ctx) =
     return Results.NotFound(); // Caso não haja devoluções
 });
 
+// Buscar empréstimo pelo id
+app.MapGet("/biblioteca/emprestimo/buscar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Emprestimo? emprestimo = ctx.Emprestimos.Find(id);
+    if (emprestimo == null){
+        return Results.NotFound();
+    } 
+    return Results.Ok(emprestimo);
+});
+
+// Deletar emprésitmo pelo id
+app.MapDelete("/biblioteca/emprestimo/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>{
+    Emprestimo? emprestimo = ctx.Emprestimos.Find(id);
+    if(emprestimo == null){
+        return Results.NotFound();
+    }
+    ctx.Emprestimos.Remove(emprestimo);
+    ctx.SaveChanges();
+    return Results.Ok(emprestimo);
+});
 
 app.UseCors("Acesso Total");
 app.Run();

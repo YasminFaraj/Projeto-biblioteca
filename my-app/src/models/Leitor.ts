@@ -1,8 +1,12 @@
+import { Emprestimo } from "./Emprestimo";
+
 export interface Leitor{
     leitorId?: string;
+    emprestimoId?: string,
     nome: string;
     sobrenome: string;
     telefone: string;
     email: string;
-    cpf: number;
+    cpf: string;
+    emprestimo?: Emprestimo;
 }

@@ -17,6 +17,6 @@ namespace Biblioteca.Models
 
         public string Telefone { get; set; }
 
-        public long CPF { get; set; }
+        public string CPF { get; set; }
     }
 }

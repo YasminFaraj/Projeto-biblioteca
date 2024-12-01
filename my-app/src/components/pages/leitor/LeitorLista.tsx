@@ -11,18 +11,29 @@ function LeitorLista(){
             method: 'GET', 
         })
             .then((resposta) => {
-                return resposta.json();
+                if (!resposta.ok) {
+                    throw new Error(`Erro na API: ${resposta.status}`);
+                }
+                return resposta.text(); // Lê como texto para evitar erro de JSON
             })
-            .then((leitores) => {
-                setLeitores(leitores);
+            .then((data) => {
+                if (data) {
+                    setLeitores(JSON.parse(data)); // Processa somente se não estiver vazio
+                } else {
+                    setLeitores([]); // Define lista vazia se o corpo for vazio
+                }
+            })
+            .catch((error) => {
+                console.error("Erro ao buscar leitor:", error);
             });
     }, []);
 
     function deletar(id: string) {
         axios
             .delete(`http://localhost:5274/biblioteca/leitor/deletar/${id}`)
-            .then((resposta) => {
-                console.log(resposta.data);
+            .then(() => {
+                console.log("Leitor deletado com sucesso!");
+                window.location.reload();
             });
     }
 
@@ -43,26 +54,32 @@ function LeitorLista(){
                     </tr>
                 </thead>
                 <tbody>
-                    {leitores.map((leitor) => (
-                        <tr key={leitor.leitorId}>
-                            <td>{leitor.leitorId}</td>
-                            <td>{leitor.nome}</td>
-                            <td>{leitor.sobrenome}</td>
-                            <td>{leitor.telefone}</td>
-                            <td>{leitor.email}</td>
-                            <td>{leitor.cpf}</td>
-                            <td>
-                                <button onClick={() => deletar(leitor.leitorId!)}>
-                                    Deletar
-                                </button> 
-                            </td>
-                            <td>
-                                <Link to={`/pages/leitor/alterar/${leitor.leitorId}`}>
-                                    Alterar
-                                </Link>
-                            </td>
+                    { leitores.length > 0 ? (
+                        leitores.map((leitor) => (
+                            <tr key={leitor.leitorId}>
+                                <td>{leitor.leitorId}</td>
+                                <td>{leitor.nome}</td>
+                                <td>{leitor.sobrenome}</td>
+                                <td>{leitor.telefone}</td>
+                                <td>{leitor.email}</td>
+                                <td>{leitor.cpf}</td>
+                                <td>
+                                    <button onClick={() => deletar(leitor.leitorId!)}>
+                                        Deletar
+                                    </button> 
+                                </td>
+                                <td>
+                                    <Link to={`/pages/leitor/alterar/${leitor.leitorId}`}>
+                                        Alterar
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={8}>Nenhum leitor encontrado.</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>

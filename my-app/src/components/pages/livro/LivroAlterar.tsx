@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Livro } from "../../../models/Livro";
 import { Autor } from "../../../models/Autor";
 
@@ -13,6 +13,8 @@ function LivroAlterar(){
     const [anoLancamento, setAnoLancamento] = useState(0);
     const [editora, setEditora] = useState("");
     const [autorId, setAutorId] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(id) {
@@ -28,6 +30,9 @@ function LivroAlterar(){
                     setEditora(resposta.data.editora);
                     buscarAutores();
                 })
+                .catch((error) => {
+                    console.error("Erro ao buscar dados:", error);
+                });
         }
     }, [id]);
 
@@ -53,9 +58,13 @@ function LivroAlterar(){
 
         axios
             .put(`http://localhost:5274/biblioteca/livro/alterar/${id}`, livro)
-            .then((resposta) =>{
-                console.log(resposta.data);
+            .then(() => {
+                console.log("Livro alterado com sucesso");
+                navigate("/pages/livro/listar");
             })
+            .catch((error) => {
+                console.error("Erro ao alterar livro:", error);
+            });
     }
 
     return (
@@ -122,7 +131,12 @@ function LivroAlterar(){
 
                 <div>
                     <label htmlFor="autor">Autores</label>
-                    <select onChange={(e: any) => setAutorId(e.target.value)}>
+                    <select 
+                        value={autorId}
+                        onChange={(e: any) => setAutorId(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecione um autor</option>
                         {autores.map((autor) => (
                             <option 
                                 value={autor.autorId}

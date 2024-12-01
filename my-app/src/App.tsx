@@ -8,8 +8,10 @@ import AutorCadastro from "./components/pages/autor/AutorCadastro";
 import LeitorAlterar from "./components/pages/leitor/LeitorAlterar";
 import LeitorLista from "./components/pages/leitor/LeitorLista";
 import LeitorCadastro from "./components/pages/leitor/LeitorCadastro";
-import EmpréstimoCadastro from "./components/pages/emprestimo/EmprestimoCadastro";
-import EmpréstimoLista from "./components/pages/emprestimo/EmprestimoLista";
+import EmprestimoFicha from "./components/pages/emprestimo/EmprestimoFicha";
+import EmprestimoLista from "./components/pages/emprestimo/EmprestimoLista";
+import EmprestimoAlterar from "./components/pages/emprestimo/EmprestimoAlterar"
+import DevolucaoLista from "./components/pages/emprestimo/DevolucaoLista";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -40,10 +42,13 @@ function App() {
               <Link to="/pages/leitor/cadastrar">Cadastrar Leitores</Link>
             </li>
             <li>
-              <Link to="/pages/emprestimo/cadastrar">Cadastrar Empréstimo</Link>
+              <Link to="/pages/emprestimo/ficha">Realizar Empréstimo</Link>
             </li>
             <li>
               <Link to="/pages/emprestimo/listar">Listar Empréstimos</Link>
+            </li>
+            <li>
+              <Link to="/pages/devolucao/listar">Listar Devoluções</Link>
             </li>
           </ul>
         </nav>
@@ -58,8 +63,10 @@ function App() {
           <Route path="/pages/leitor/listar" element={<LeitorLista />} />
           <Route path="/pages/leitor/alterar/:id" element={<LeitorAlterar />} />
           <Route path="/pages/leitor/cadastrar" element={<LeitorCadastro />} />
-          <Route path="/pages/emprestimo/cadastrar" element={<EmpréstimoCadastro />} />
-          <Route path="/pages/emprestimo/listar" element={<EmpréstimoLista />} />
+          <Route path="/pages/emprestimo/ficha" element={<EmprestimoFicha />} />
+          <Route path="/pages/emprestimo/listar" element={<EmprestimoLista />} />
+          <Route path="/pages/emprestimo/alterar/:id" element={<EmprestimoAlterar />} />
+          <Route path="/pages/devolucao/listar" element={<DevolucaoLista />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Leitor } from "../../../models/Leitor";
+import { useNavigate } from "react-router-dom";
 
 function LeitorCadastro() {
     const [nome, setNome] = useState("");
     const [sobrenome, setSobrenome] = useState("");
     const [telefone, setTelefone] = useState("");
     const [email, setEmail] = useState("");
-    const [cpf, setCPF] = useState(0);
+    const [cpf, setCPF] = useState("");
+    const navigate = useNavigate();
 
     function enviarLeitor(e: any) {
         e.preventDefault();
@@ -26,12 +28,21 @@ function LeitorCadastro() {
             },
             body: JSON.stringify(leitor),
         })
-        .then((resposta) => {
-            return resposta.json();
-        })
-        .then((leitor) => {
-            console.log("Leitor cadastrado", leitor);
-        });
+            .then((resposta) => resposta.json())
+            .then(() => {
+                console.log("Leitor cadastrado com sucesso");
+                navigate("/pages/leitor/listar");
+            })
+            .catch((error) => {
+                console.error("Erro ao cadastrar leitor:", error);
+            });
+    }
+
+    // Função para garantir que o CPF tenha apenas números
+    function handleCPFChange(e: any) {
+        const cpfValue = e.target.value;
+        const onlyNumbers = cpfValue.replace(/\D/g, ''); // Remove tudo que não for número
+        setCPF(onlyNumbers);
     }
 
     return(
@@ -77,7 +88,7 @@ function LeitorCadastro() {
                 <div>
                     <label htmlFor="email">Email</label>
                     <input 
-                        type="text" 
+                        type="email" 
                         name="email" 
                         id="email"
                         value={email}
@@ -89,12 +100,13 @@ function LeitorCadastro() {
                 <div>
                     <label htmlFor="cpf">CPF</label>
                     <input 
-                        type="number" 
+                        type="text" 
                         name="cpf" 
                         id="cpf"
                         value={cpf}
                         required
-                        onChange={(e: any) => setCPF(e.target.value)} 
+                        onChange={handleCPFChange}
+                        maxLength={11} 
                     />
                 </div>
 

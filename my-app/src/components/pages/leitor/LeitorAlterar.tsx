@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Leitor } from "../../../models/Leitor";
 
 function LeitorAlterar(){
@@ -9,14 +9,14 @@ function LeitorAlterar(){
     const [sobrenome, setSobrenome] = useState("");
     const [telefone, setTelefone] = useState("");
     const [email, setEmail] = useState("");
-    const [cpf, setCPF] = useState(0);
+    const [cpf, setCPF] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(id) {
             axios
-                .get<Leitor>(
-                    `http://localhost:5274/biblioteca/leitor/buscar/${id}`
-                )
+                .get<Leitor>(`http://localhost:5274/biblioteca/leitor/buscar/${id}`)
                 .then((resposta) => {
                     setNome(resposta.data.nome);
                     setSobrenome(resposta.data.sobrenome);
@@ -24,6 +24,9 @@ function LeitorAlterar(){
                     setEmail(resposta.data.email);
                     setCPF(resposta.data.cpf);
                 })
+                .catch((error) => {
+                    console.error("Erro ao buscar dados:", error);
+                });
         }
     }, [id]);
 
@@ -40,9 +43,20 @@ function LeitorAlterar(){
 
         axios
             .put(`http://localhost:5274/biblioteca/leitor/alterar/${id}`, leitor)
-            .then((resposta) =>{
-                console.log(resposta.data);
+            .then(() => {
+                console.log("Leitor alterado com sucesso");
+                navigate("/pages/leitor/listar");
             })
+            .catch((error) => {
+                console.error("Erro ao alterar leitor:", error);
+            });
+    }
+
+    // Função para garantir que o CPF tenha apenas números
+    function handleCPFChange(e: any) {
+        const cpfValue = e.target.value;
+        const onlyNumbers = cpfValue.replace(/\D/g, ''); // Remove tudo que não for número
+        setCPF(onlyNumbers);
     }
 
     return (
@@ -88,7 +102,7 @@ function LeitorAlterar(){
                 <div>
                     <label htmlFor="email">Email</label>
                     <input 
-                        type="text" 
+                        type="email" 
                         name="email" 
                         id="email"
                         value={email}
@@ -100,12 +114,13 @@ function LeitorAlterar(){
                 <div>
                     <label htmlFor="cpf">CPF</label>
                     <input 
-                        type="number" 
+                        type="text" 
                         name="cpf" 
                         id="cpf"
                         value={cpf}
                         required
-                        onChange={(e: any) => setCPF(e.target.value)} 
+                        onChange={handleCPFChange}
+                        maxLength={11} 
                     />
                 </div>
 

@@ -8,23 +8,29 @@ function AutorLista() {
 
     useEffect(() => {
         fetch("http://localhost:5274/biblioteca/autor/listar", {
-            method: 'GET',
+            method: 'GET', 
         })
-            .then((resposta) => resposta.json()) // Retorno do fetch é tratado como 'unknown'
-            .then((autores: Autor[]) => { // Agora definimos explicitamente que 'autores' é do tipo Autor[]
-                setAutores(autores); // Atualiza o estado corretamente
+            .then((resposta) => {
+                if (!resposta.ok) {
+                    throw new Error(`Erro na API: ${resposta.status}`);
+                }
+                return resposta.json(); // Lê diretamente como JSON
             })
-            .catch((erro) => console.error("Erro ao carregar os autores:", erro));
+            .then((data) => {
+                setAutores(data || []); // Define lista de autores ou um array vazio
+            })
+            .catch((error) => {
+                console.error("Erro ao buscar autores:", error);
+                setAutores([]); // Garante um estado seguro
+            });
     }, []);
 
     function deletar(id: string) {
         axios
             .delete(`http://localhost:5274/biblioteca/autor/deletar/${id}`)
-            .then((resposta) => {
-                console.log(resposta.data);
-            })
-            .catch((erro) => {
-                console.error("Erro ao deletar o autor:", erro);
+            .then(() => {
+                console.log("Autor deletado com sucesso!");
+                window.location.reload();
             });
     }
 
@@ -43,20 +49,26 @@ function AutorLista() {
                     </tr>
                 </thead>
                 <tbody>
-                    {autores.map((autor) => (
-                        <tr key={autor.autorId}>
-                            <td>{autor.autorId}</td>
-                            <td>{autor.nome}</td>
-                            <td>{autor.sobrenome}</td>
-                            <td>{autor.pais}</td>
-                            <td>
-                                <button onClick={() => deletar(autor.autorId!)}>Deletar</button>
-                            </td>
-                            <td>
-                                <Link to={`/pages/autor/alterar/${autor.autorId}`}>Alterar</Link>
-                            </td>
+                    {autores.length > 0 ? (
+                        (autores.map((autor) => (
+                            <tr key={autor.autorId}>
+                                <td>{autor.autorId}</td>
+                                <td>{autor.nome}</td>
+                                <td>{autor.sobrenome}</td>
+                                <td>{autor.pais}</td>
+                                <td>
+                                    <button onClick={() => deletar(autor.autorId!)}>Deletar</button>
+                                </td>
+                                <td>
+                                    <Link to={`/pages/autor/alterar/${autor.autorId}`}>Alterar</Link>
+                                </td>
+                            </tr>
+                        )))
+                    ): (
+                        <tr>
+                            <td colSpan={6}>Nenhum autor encontrado.</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>

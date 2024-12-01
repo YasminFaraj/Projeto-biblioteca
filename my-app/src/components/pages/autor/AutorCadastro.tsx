@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Autor } from "../../../models/Autor";
+import { useNavigate } from "react-router-dom";
 
 function AutorCadastro() {
     const [nome, setNome] = useState("");
     const [sobrenome, setSobrenome] = useState("");
     const [pais, setPais] = useState("");
+    const navigate = useNavigate();
 
     function enviarAutor(e: any) {
         e.preventDefault();
@@ -22,12 +24,14 @@ function AutorCadastro() {
             },
             body: JSON.stringify(autor),
         })
-        .then((resposta) => {
-            return resposta.json();
-        })
-        .then((autor) => {
-            console.log("Autor cadastrado", autor);
-        });
+            .then((resposta) => resposta.json())
+            .then(() => {
+                console.log("Autor cadastrado com sucesso");
+                navigate("/pages/autor/listar");
+            })
+            .catch((error) => {
+                console.error("Erro ao cadastrar autor:", error);
+            });
     }
 
     return(

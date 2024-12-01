@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Autor } from "../../../models/Autor";
 
 function AutorAlterar(){
@@ -8,18 +8,20 @@ function AutorAlterar(){
     const [nome, setNome] = useState("");
     const [sobrenome, setSobrenome] = useState("");
     const [pais, setPais] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(id) {
             axios
-                .get<Autor>(
-                    `http://localhost:5274/biblioteca/autor/buscar/${id}`
-                )
+                .get<Autor>(`http://localhost:5274/biblioteca/autor/buscar/${id}`)
                 .then((resposta) => {
                     setNome(resposta.data.nome);
                     setSobrenome(resposta.data.sobrenome);
                     setPais(resposta.data.pais);
                 })
+                .catch((error) => {
+                    console.error("Erro ao buscar dados:", error);
+                });
         }
     }, [id]);
 
@@ -32,11 +34,20 @@ function AutorAlterar(){
             pais: pais,
         };
 
+        // Atualizar o empréstimo
         axios
-            .put(`http://localhost:5274/biblioteca/autor/alterar/${id}`, autor)
-            .then((resposta) =>{
-                console.log(resposta.data);
+            .put(`http://localhost:5274/biblioteca/autor/alterar/${id}`, autor, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
             })
+            .then(() => {
+                console.log("Empréstimo alterado com sucesso");
+                navigate("/pages/autor/listar");
+            })
+            .catch((error) => {
+                console.error("Erro ao alterar empréstimo:", error);
+            });
     }
 
     return (

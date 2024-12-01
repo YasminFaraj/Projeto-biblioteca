@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Livro } from "../../../models/Livro";
 import { Autor } from "../../../models/Autor";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function LivroCadastro() {
     const [autores, setAutores] = useState<Autor[]>([]);
@@ -11,6 +12,7 @@ function LivroCadastro() {
     const [anoLancamento, setAnoLancamento] = useState(0);
     const [editora, setEditora] = useState("");
     const [autorId, setAutorId] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios
@@ -39,12 +41,14 @@ function LivroCadastro() {
             },
             body: JSON.stringify(livro),
         })
-        .then((resposta) => {
-            return resposta.json();
-        })
-        .then((livro) => {
-            console.log("Livro cadastrado", livro);
-        });
+            .then((resposta) => resposta.json())
+            .then(() => {
+                console.log("Livro cadastrado com sucesso");
+                navigate("/pages/livro/listar");
+            })
+            .catch((error) => {
+                console.error("Erro ao cadastrar livro:", error);
+            });
     }
 
     return(

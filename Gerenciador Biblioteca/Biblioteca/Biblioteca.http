@@ -78,7 +78,7 @@ Content-Type: application/json
     "sobrenome": "Santos Oliveira",
     "telefone": "(41) 99187-8044",
     "email": "laura.oliveira4@cs.up.edu.br",
-    "cpf": 11144477735
+    "cpf": "11144477735"
 }
 
 ### Deletar leitor/cliente pelo id
@@ -96,7 +96,7 @@ Content-Type: application/json
     "sobrenome": "Faraj",
     "telefone": "(42) 99999-1111",
     "email": "yasmin.faraj@cs.up.edu.br",
-    "cpf": 11144477735
+    "cpf": "11144477735"
 }
 
 // ------ EMPRÉSTIMOS/DEVOLUÇÃO ------
@@ -114,7 +114,7 @@ Content-Type: application/json
 }
 
 ### Devolver livro
-PUT http://localhost:5274/biblioteca/emprestimo/devolver/1721fc0f-444b-49f4-a10a-806d4652b3d1
+PUT http://localhost:5274/biblioteca/emprestimo/devolver/439eb549-4f75-4c3e-b337-777c8f51bdbf
 
 ### Alterar empréstimo pelo id
 PUT http://localhost:5274/biblioteca/emprestimo/alterar/e7a73481-2e46-4ea1-a499-f779fc7ef547

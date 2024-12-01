@@ -74,8 +74,9 @@ namespace Biblioteca.Migrations
                     b.Property<string>("LeitorId")
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("CPF")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");

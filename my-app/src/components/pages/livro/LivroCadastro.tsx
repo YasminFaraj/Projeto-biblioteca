@@ -115,7 +115,12 @@ function LivroCadastro() {
 
                 <div>
                     <label htmlFor="autor">Autores</label>
-                    <select onChange={(e: any) => setAutorId(e.target.value)}>
+                    <select 
+                        value={autorId}
+                        onChange={(e: any) => setAutorId(e.target.value)}
+                        required
+                    >
+                        <option value="">Selecione um autor</option>
                         {autores.map((autor) => (
                             <option 
                                 value={autor.autorId}
